@@ -49,6 +49,7 @@ function prox_wrapper(step::Cdouble, xb::Ptr{Cdouble}, xe::Ptr{Cdouble},
   g = unsafe_wrap(Array, gcurr, N)
   xn = unsafe_wrap(Array, xnew, N)
   prox!(obj, step, xo, g, xn)
+  return xnew + ptrdiff
 end
 
 function loss_wrapper(xb::Ptr{Cdouble}, gb::Ptr{Cdouble}, data::Ptr{Cvoid})::Cdouble
@@ -57,4 +58,27 @@ function loss_wrapper(xb::Ptr{Cdouble}, gb::Ptr{Cdouble}, data::Ptr{Cvoid})::Cdo
   x = unsafe_wrap(Array, xb, N)
   g = unsafe_wrap(Array, gb, N)
   return loss!(obj, x, g)
+end
+
+function m_log_wrapper(k::Cint, fval::Cdouble, xb::Ptr{Cdouble},
+  xe::Ptr{Cdouble}, gb::Ptr{Cdouble}, data::Ptr{Cvoid})::Cvoid
+  logger = unsafe_pointer_to_objref(data)::Function
+  ptrdiff = Int(xe - xb)
+  N = divrem(ptrdiff, sizeof(Cdouble))[1]
+  x = unsafe_wrap(Array, xb, N)
+  g = unsafe_wrap(Array, gb, N)
+  logger(k, fval, x, g)
+  nothing
+end
+
+function s_log_wrapper(k::Cint, data::Ptr{Cvoid})::Cvoid
+  logger = unsafe_pointer_to_objref(data)::Function
+  logger(k)
+  nothing
+end
+
+function w_log_wrapper(k::Cint, fval::Cdouble, data::Ptr{Cvoid})::Cvoid
+  logger = unsafe_pointer_to_objref(data)::Function
+  logger(k, fval)
+  nothing
 end

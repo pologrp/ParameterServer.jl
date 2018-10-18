@@ -33,9 +33,10 @@ function _psoptions(; linger::Integer = 1000, tm::Integer = 5000,
   scheduler_ports::Tuple{<:Integer,<:Integer,<:Integer} = (40000, 40001, 40002),
   worker_port::Integer = 50000)
 
-  return _options_t(Cint(linger), Clong(tm), Clong(tw), Clong(ts), Int32(M),
-  ntuple(i->(i <= length(scheduler) ? Cchar(scheduler[i]) : Cchar('\0')), 256),
-  ntuple(i->(i <= length(master) ? Cchar(master[i]) : Cchar('\0')), 256),
-  ntuple(i->UInt16(scheduler_ports[i]), 3), UInt16(worker_port)
+  return _options_t(
+    Cint(linger), Clong(tm), Clong(tw), Clong(ts), Int32(M),
+    ntuple(i->(i <= length(scheduler) ? Cchar(scheduler[i]) : Cchar('\0')), 256),
+    ntuple(i->(i <= length(master) ? Cchar(master[i]) : Cchar('\0')), 256),
+    ntuple(i->UInt16(scheduler_ports[i]), 3), UInt16(worker_port)
   )
 end

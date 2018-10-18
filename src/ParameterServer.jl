@@ -10,11 +10,13 @@ function step!() end
 function smooth!() end
 function prox!() end
 function loss!() end
+function nfeatures() end
 
 export
   PSMaster,
   PSScheduler,
-  PSWorker
+  PSWorker,
+  solve!
 
 # Load in `deps.jl`, complaining if it does not exist
 const depsjl_path = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
