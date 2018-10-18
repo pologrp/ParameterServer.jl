@@ -70,15 +70,3 @@ function m_log_wrapper(k::Cint, fval::Cdouble, xb::Ptr{Cdouble},
   logger(k, fval, x, g)
   nothing
 end
-
-function s_log_wrapper(k::Cint, data::Ptr{Cvoid})::Cvoid
-  logger = unsafe_pointer_to_objref(data)::Function
-  logger(k)
-  nothing
-end
-
-function w_log_wrapper(k::Cint, fval::Cdouble, data::Ptr{Cvoid})::Cvoid
-  logger = unsafe_pointer_to_objref(data)::Function
-  logger(k, fval)
-  nothing
-end

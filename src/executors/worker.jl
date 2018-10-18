@@ -19,9 +19,7 @@ end
 
 cconvert(::Type{_options_t}, agent::PSWorker) = agent.options
 
-function solve!(logger::Function, agent::PSWorker, x::AbstractVector, loss)
-  logger_c = @cfunction(w_log_wrapper, Cvoid,
-    (Cint, Cdouble, Ptr{Cvoid}))
+function solve!(agent::PSWorker, x::AbstractVector, loss)
   loss_c = @cfunction(loss_wrapper, Cdouble,
     (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}))
 
@@ -30,8 +28,8 @@ function solve!(logger::Function, agent::PSWorker, x::AbstractVector, loss)
   xe = pointer(x_, length(x_) + 1)
 
   err = ccall(paramserver_w, _error_t,
-    (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}, Any, Ptr{Cvoid}, Any, _options_t),
-    xb, xe, loss_c, loss, logger_c, logger, agent)
+    (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cvoid}, Any, _options_t),
+    xb, xe, loss_c, loss, agent)
 
   if err.id != zero(err.id)
     lastidx = findfirst(x->x<=zero(x), err.what)

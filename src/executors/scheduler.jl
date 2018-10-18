@@ -20,17 +20,14 @@ end
 
 cconvert(::Type{_options_t}, agent::PSScheduler) = agent.options
 
-function solve!(logger::Function, agent::PSScheduler, x::AbstractVector, K::Integer)
-  logger_c = @cfunction(s_log_wrapper, Cvoid,
-    (Cint, Ptr{Cvoid}))
-
+function solve!(agent::PSScheduler, x::AbstractVector, K::Integer)
   x_ = Vector{Cdouble}(x)
   xb = pointer(x_, 1)
   xe = pointer(x_, length(x_) + 1)
 
   err = ccall(paramserver_s, _error_t,
-    (Ptr{Cdouble}, Ptr{Cdouble}, Cint, Ptr{Cvoid}, Any, _options_t),
-    xb, xe, K, logger_c, logger, agent)
+    (Ptr{Cdouble}, Ptr{Cdouble}, Cint, _options_t),
+    xb, xe, K, agent)
 
   if err.id != zero(err.id)
     lastidx = findfirst(x->x<=zero(x), err.what)

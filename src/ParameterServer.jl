@@ -10,6 +10,7 @@ function step!() end
 function smooth!() end
 function prox!() end
 function loss!() end
+loss!(loss, x, g) = loss(x, g)
 function nfeatures() end
 
 export
